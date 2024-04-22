@@ -10,13 +10,33 @@ class HeroFactory
         /** @var Hero $hero */
         $hero = new Hero();
 
-        $hero->setName($params['name']);
-        $hero->setHeroName($params['heroName']);
-        $hero->setPublisher($params['publisher']);
-        $hero->setFirstAppearance($params['firstAppearanceDate']);
-        $hero->setAbilities($params['abilities']);
-        $hero->setTeamAffiliations($params['teamAffiliations']);
-        $hero->setPowers($params['powers']);
+        if(isset($params['name'])) {
+            $hero->setName($params['name']);
+        }
+
+        if(isset($params['heroName'])) {
+            $hero->setHeroName($params['heroName']);
+        }
+
+        if(isset($params['publisher'])) {
+            $hero->setPublisher($params['publisher']);
+        }
+
+        if(isset($params['firstAppearanceDate'])) {
+            $hero->setFirstAppearance($params['firstAppearanceDate']);
+        }
+
+        if(isset($params['abilities'])) {
+            $hero->setAbilities($params['abilities']);
+        }
+
+        if(isset($params['teamAffiliations'])) {
+            $hero->setTeamAffiliations($params['teamAffiliations']);
+        }
+
+        if(isset($params['powers'])) {
+            $hero->setPowers($params['powers']);
+        }
 
         return $hero;
     }

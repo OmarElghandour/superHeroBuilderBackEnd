@@ -41,9 +41,12 @@ class HeroController extends AbstractController
         $parameters = json_decode($request->getContent(), true);
         $payload = $parameters['payload'];
 
-
-
         $hero = $entityManager->getRepository(Hero::class)->find($id);
+
+        if(!$hero) {
+            return new JsonResponse(['message' => 'hero with id ' . $id . ' not found'] , 404);
+        }
+
         $hero->setName($payload['name']);
         $hero->setHeroName($payload['heroName']);
         $hero->setPublisher($payload['publisher']);
@@ -71,6 +74,11 @@ class HeroController extends AbstractController
         $id = $request->attributes->get('id');
 
         $hero = $entityManager->getRepository(Hero::class)->find($id);
+
+        if(!$hero) {
+            return new JsonResponse(['message' => 'hero with id ' . $id . ' not found'] , 404);
+        }
+        
         $entityManager->remove($hero);
         $entityManager->flush();
         return new JsonResponse(['message' => 'hero deleted'] , 200);
@@ -81,6 +89,11 @@ class HeroController extends AbstractController
     public function getOne(EntityManagerInterface $entityManager, $id)
     {
         $hero = $entityManager->getRepository(Hero::class)->find($id);
+
+        if(!$hero) {
+            return new JsonResponse(['message' => 'hero with id ' . $id . ' not found'] , 404);
+        }
+
         $heroArray = [
             'id' => $hero->getId(),
             'name' => $hero->getName(),
