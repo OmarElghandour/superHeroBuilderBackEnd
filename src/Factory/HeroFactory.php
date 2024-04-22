@@ -11,11 +11,12 @@ class HeroFactory
         $hero = new Hero();
 
         $hero->setName($params['name']);
-        $hero->setHeroName($params['hero_name']);
+        $hero->setHeroName($params['heroName']);
         $hero->setPublisher($params['publisher']);
-        $hero->setFirstAppearance($params['first_appearance']);
+        $hero->setFirstAppearance($params['firstAppearanceDate']);
         $hero->setAbilities($params['abilities']);
-        $hero->setTeamAffiliations($params['team_affiliations']);
+        $hero->setTeamAffiliations($params['teamAffiliations']);
+        $hero->setPowers($params['powers']);
 
         return $hero;
     }

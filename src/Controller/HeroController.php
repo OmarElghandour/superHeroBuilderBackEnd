@@ -8,13 +8,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class HeroController extends AbstractController
 {
-    #[Route('/api/hero', name: 'get_hero' , methods: ['POST'])]
+    #[Route('/api/hero', name: 'create_hero' , methods: ['POST'])]
     public function create(Request $request, ValidatorInterface  $validator, EntityManagerInterface $entityManager)
     {
         $parameters = json_decode($request->getContent(), true);        
@@ -25,56 +24,78 @@ class HeroController extends AbstractController
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
 
-            return new Response($errorsString , 400);
+            return new JsonResponse(['message' => $errorsString] , 400);
         }
 
         $entityManager->persist($hero);
         $entityManager->flush();
-        return new Response('hero created' , 200);
+        return new JsonResponse(['message' =>'hero created successfully' ], 200);
     }
 
 
     #[Route('/api/hero/{id}', name: 'update_hero' , methods: ['PUT'])]
     public function update(Request $request, EntityManagerInterface $entityManager , ValidatorInterface $validator)
     {
+        $id = $request->attributes->get('id');
+
         $parameters = json_decode($request->getContent(), true);
         $payload = $parameters['payload'];
 
-        $hero = $entityManager->getRepository(Hero::class)->find($parameters['id']);
+
+
+        $hero = $entityManager->getRepository(Hero::class)->find($id);
         $hero->setName($payload['name']);
         $hero->setHeroName($payload['heroName']);
         $hero->setPublisher($payload['publisher']);
-        $hero->setFirstAppearance($payload['firstAppearance']);
+        $hero->setFirstAppearance($payload['firstAppearanceDate']);
         $hero->setAbilities($payload['abilities']);
         $hero->setTeamAffiliations($payload['teamAffiliations']);
-
+        $hero->setPowers($payload['powers']);
         $errors = $validator->validate($hero);
 
         if (count($errors) > 0) {
             $errorsString = (string) $errors;
 
-            return new Response($errorsString , 400);
+            return new JsonResponse(['message' => $errorsString] , 400);
         }
 
         $entityManager->persist($hero);
         $entityManager->flush();
-        return new Response('hero updated' , 200);
+        return new JsonResponse(['message' => 'hero with id ' . $id . ' updated successfully'] , 200);
     }
 
 
     #[Route('/api/hero/{id}', name: 'delete_hero' , methods: ['DELETE'])]
     public function delete(Request $request, EntityManagerInterface $entityManager)
     {
-        $parameters = json_decode($request->getContent(), true);        
+        $id = $request->attributes->get('id');
 
-        $hero = $entityManager->getRepository(Hero::class)->find($parameters['id']);
+        $hero = $entityManager->getRepository(Hero::class)->find($id);
         $entityManager->remove($hero);
         $entityManager->flush();
-        return new Response('hero deleted' , 200);
+        return new JsonResponse(['message' => 'hero deleted'] , 200);
     }
 
-    #[Route('/api/heros', name: 'get_heroes' , methods: ['GET'])]
-    public function get(EntityManagerInterface $entityManager)
+
+    #[Route('/api/hero/{id}', name: 'get_hero' , methods: ['GET'])]
+    public function getOne(EntityManagerInterface $entityManager, $id)
+    {
+        $hero = $entityManager->getRepository(Hero::class)->find($id);
+        $heroArray = [
+            'id' => $hero->getId(),
+            'name' => $hero->getName(),
+            'heroName' => $hero->getHeroName(),
+            'publisher' => $hero->getPublisher(),
+            'firstAppearance' => $hero->getFirstAppearance(),
+            'abilities' => $hero->getAbilities(),
+            'teamAffiliations' => $hero->getTeamAffiliations(),
+            'powers' => $hero->getPowers()
+        ];
+        return new JsonResponse(json_encode($heroArray), 200, [], true);
+    }
+
+    #[Route('/api/heroes', name: 'get_heroes' , methods: ['GET'])]
+    public function getAll(EntityManagerInterface $entityManager)
     {
         // Fetch heroes from the database
         $heroes = $entityManager->getRepository(Hero::class)->findAll();
@@ -90,6 +111,7 @@ class HeroController extends AbstractController
                 'firstAppearance' => $hero->getFirstAppearance(),
                 'abilities' => $hero->getAbilities(),
                 'teamAffiliations' => $hero->getTeamAffiliations(),
+                'powers' => $hero->getPowers()
             ];
         }      
           

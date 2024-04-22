@@ -38,6 +38,11 @@ class Hero {
     #[ORM\Column(type: 'array')]
     private $teamAffiliations;
 
+    #[Assert\Type('array')]
+    #[ORM\Column(type: 'array')]
+    private $powers;
+
+
     public function getId() : int {
 
         return $this->id;
@@ -104,6 +109,15 @@ class Hero {
 
     public function setTeamAffiliations($teamAffiliations) : Hero {
         $this->teamAffiliations = $teamAffiliations;
+        return $this;
+    }
+
+    public function getPowers() : array {
+        return $this->powers;
+    }
+
+    public function setPowers($powers) : Hero {
+        $this->powers = $powers;
         return $this;
     }
 
